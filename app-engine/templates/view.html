@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<script>
+  function resizeFrame(obj) {
+    obj.height= screen.height * 0.68;
+  }
+  function resizeImage(obj) {
+    obj.style['max-height']= screen.height * 0.68;
+  }
+</script>
+
+<div class="row">
+	<div class="col-xs-6 col-sm-6 col-lg-6" style="" align="center">
+		<div class="panel panel-primary" id='panel_left'>
+				<div class="panel-heading">
+    			<h3 class="panel-title">
+						<b>{{prediction.label}}</b>&nbsp;&nbsp;&nbsp;<span class="badge">{{prediction.accuracy}} %</span>
+    			</h3>
+  			</div>
+  			<div class="panel-body" >
+    			<img id="uploaded_image" alt='{{file_name}}' src=""  style= "width:100%;" onload="resizeImage(this);"/>
+      		<script>
+  					document.getElementById("uploaded_image").src='data:'+ '{{content_type}}'+ ';base64,' + '{{image_data}}';
+					</script> 
+  			</div>
+		</div>
+	</div>
+	<div class="col-xs-6 col-sm-6 col-lg-6" style="" align='center'>
+		<div class="panel panel-primary" width= '100%' height='100%'>
+			<div class="panel-heading">
+    			<h3 class="panel-title">
+						<b>{{prediction.breed}}</b>
+    			</h3>
+  		</div>
+  		<div class="panel-body" >
+  			{% if prediction.breed== '' %}
+  				<img src="https://i.giphy.com/media/13mfGIwrAqiM8/giphy.webp" style="width:80%;">
+  			{% else %}
+  				<iframe id='iframe' src="https://pxhere.com/es/photos?q=dog+breed+{{prediction.breed}}&tbs=itp:face" frameborder="0" style="width:100%;height=50%" onload="resizeFrame(this);"/>
+    		{% endif %}
+  		</div>
+		</div>
+	</div>
+</div>
+
+
+
+{% endblock %}
