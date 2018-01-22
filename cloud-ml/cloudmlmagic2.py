@@ -34,9 +34,7 @@ class MLMagics(Magics):
         parser.add_argument('-region', default='us-central1')
         parser.add_argument('-scaleTier', default='BASIC')
         parser.add_argument('-runtimeVersion', default='1.0')
-        #parser.add_argument('-requires', default='', type=str)
-        parser.add_argument('-requires', nargs='+', default='', type=str)
-        #parser.add_argument('-requires', '--list', help='delimited list input', type=str, default='')
+        parser.add_argument('-requires', nargs='+', default='', type=str)  # Modified by mezquita. Jan 20 2018
 
         settings = parser.parse_args(line.split())
 
@@ -52,7 +50,10 @@ class MLMagics(Magics):
         else:
             ex_settings = eval(cell)
             
-        if ex_settings == None: ex_settings = eval("{'install_requires': %s}" % str(settings.requires))
+        # Modified by mezquita. Jan 20 2018    
+        if ex_settings == None: 	# Modified by mezquita. Jan 20 2018
+        	ex_settings = eval("{'install_requires': %s}" % str(settings.requires))
+        # end of mezquita 
         
         if ex_settings != None:
             if type(ex_settings) == dict:
