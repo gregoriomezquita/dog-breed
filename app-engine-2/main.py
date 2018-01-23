@@ -16,23 +16,44 @@
 import logging
 
 from flask import current_app, Flask, render_template, request, jsonify, send_from_directory
-from PIL import Image, ImageOps
+#from pillow import Image, ImageOps
+from google.appengine.api import images
+from google.appengine.ext import ndb
+import os
+import io
+import base64
+import json
 
 
 app = Flask(__name__)
-
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
 	if request.method == 'POST':
 		try:
-			img = request.files.get('image')
-			image= io.BytesIO(img.read())
-			image = ImageOps.fit(image, [224, 224], Image.ANTIALIAS)
-			res= '<html><body align= "center"><h1>Hello World!: POST</h1></body></html>'
+			img= request.files.get('image')
+			image_data= img.read()
+			image= images.Image(image_data=image_data)
+			#image_bytes= io.BytesIO(image_stream)
+			#img_b64= base64.b64encode(image_stream)
+			#img_b64_str= str(img_b64)
+			#image= images.Image(image_data=image_bytes)
+			image.resize(width=224, height=224, crop_to_fit=True)
+			#image.im_feeling_lucky()
+			thumbnail= image.execute_transforms(output_encoding=images.JPEG)
+			print(image.width, image.height)
+
+			#img = request.files.get('image')
+			#image= io.BytesIO(img.read())
+			#image = ImageOps.fit(image, [224, 224], Image.ANTIALIAS)
+			img_b64_str= str(base64.b64encode(image_data))
+			#breed, acc= predict_raw(thumbnail)
+			img_b64_str= str(base64.b64encode(thumbnail))
+			breed, acc= '', 0.0
+			prediction= {'label':'HUMAN', 'breed':breed, 'accuracy':acc}
 		except Exception as e:
 			return jsonify(status_code='400', msg='Bad Request: %s' % str(e)), 400
-		return res
+		return render_template('view.html', image_data= img_b64_str, file_name= img.filename, content_type= img.content_type, prediction= prediction)
 	else:
 		return render_template('form.html')
 
