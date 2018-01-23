@@ -20,7 +20,7 @@
     			</h3>
   			</div>
   			<div class="panel-body" >
-    			<img id="uploaded_image" alt='{{file_name}}' src=""  style= "width:100%;" onload="resizeImage(this);"/>
+    			<img id="uploaded_image" alt='{{file_name}}' src=""  style= "max-width:100%;" onload="resizeImage(this);"/>
       		<script>
   					document.getElementById("uploaded_image").src='data:'+ '{{content_type}}'+ ';base64,' + '{{image_data}}';
 					</script> 

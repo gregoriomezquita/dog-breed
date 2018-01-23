@@ -1,6 +1,8 @@
 #
 # This cell has all the dependencies
 #
+NETWORK= 'InceptionV3'
+
 import numpy as np
 from keras.models import model_from_json
 from keras.models import load_model
@@ -8,9 +10,12 @@ from keras.preprocessing import image
 from tqdm import tqdm
 from glob import glob
 import tensorflow as tf
-from keras.applications.xception import Xception
-from keras.applications.xception import preprocess_input as xception_preprocess_input
-from keras.applications.xception import decode_predictions
+if NETWORK== 'InceptionV3':
+    from keras.applications.inception_v3 import InceptionV3 as keras_model
+    from keras.applications.inception_v3 import preprocess_input as keras_model_preprocess_input
+elif NETWORK== 'Xception':
+    from keras.applications.xception import Xception as keras_model
+    from keras.applications.xception import preprocess_input as keras_model_preprocess_input
 from keras.applications.resnet50 import ResNet50
 from keras.applications.resnet50 import preprocess_input as resnet50_preprocess_input
 #from keras import backend as K
@@ -31,8 +36,8 @@ def path_to_tensor(img):
     return np.expand_dims(x, axis=0)
 
 def get_dog_breed(img):
-	feature= xception.predict(xception_preprocess_input(path_to_tensor(img)))
-	prediction= model.predict(feature)
+	feature= selected_model.predict(keras_model_preprocess_input(path_to_tensor(img)))
+	prediction= my_model.predict(feature)
 	max= np.argmax(prediction)
 	accuracy= prediction[0, max]* 100
 	return dog_names[max], accuracy
@@ -60,8 +65,8 @@ def predict(img_path):
 	breed= ''
 	acc= 0
 	
-	#global graph_xception
-	with graph_xception.as_default():
+	#global graph_selected_model
+	with graph_selected_model.as_default():
 		if face_detector(img):  
 			label= 'HUMAN'
 			breed, acc= get_dog_breed(img)
@@ -71,32 +76,17 @@ def predict(img_path):
     	
 	return {'label': label, 'breed': breed, 'accuracy': '%.3f' % acc}
 
-def predict2(img_raw):
-	img = image.load_img(img_raw, target_size=(299, 299))
-	x= path_to_tensor(img)
-	x = xception_preprocess_input(x)
-
-	global graph_xception
-	with graph_xception.as_default():
-		preds = xception_full.predict(x)
-
-	top3 = decode_predictions(preds,top=3)[0]
-
-	predictions = [{'label': label, 'description': description, 'probability': probability * 100.0}
-                    for label,description, probability in top3]
-	return predictions
-
 dog_names= load_dog_names('dog_names.json')
 
-#xception_full = Xception(include_top=True, weights='imagenet', input_tensor=None, input_shape=None)
-xception= Xception(weights='imagenet', include_top=False)
+selected_model= keras_model(weights='imagenet', include_top=False)
 #xception= load_model('xception.h5')
-graph_xception = tf.get_default_graph()
+graph_selected_model = tf.get_default_graph()
 
 ResNet50_model = ResNet50(weights='imagenet')
 graph_resnet50 = tf.get_default_graph()
 
-with open("savedmodels/model_Xception.json", "r") as file: model= model_from_json(file.read())
-model.load_weights('savedmodels/weights.best.Xception.hdf5') 
-graph_model = tf.get_default_graph()
+#with open("savedmodels/model_Xception.json", "r") as file: model= model_from_json(file.read())
+#model.load_weights('savedmodels/weights.best.Xception.hdf5') 
+my_model = load_model('savedmodels/weights.best.{}.hdf5'.format(NETWORK))
+graph_my_model = tf.get_default_graph()
 
