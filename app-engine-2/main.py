@@ -19,13 +19,18 @@ from flask import current_app, Flask, render_template, request, jsonify, send_fr
 #from pillow import Image, ImageOps
 from google.appengine.api import images
 from google.appengine.ext import ndb
+from google.appengine.api import app_identity
 import os
 import io
 import base64
 import json
+#import request
 
+token= app_identity.get_access_token('https://www.googleapis.com/auth/cloud-platform')[0]
 
 app = Flask(__name__)
+
+#url = 'https://ml.googleapis.com/v1/projects/{}/models/{}/versions/{}:predict&key={}'.format('udacity-190420','DogBreed','v1', auth)
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
@@ -41,7 +46,6 @@ def home():
 			image.resize(width=224, height=224, crop_to_fit=True)
 			#image.im_feeling_lucky()
 			thumbnail= image.execute_transforms(output_encoding=images.JPEG)
-			print(image.width, image.height)
 
 			#img = request.files.get('image')
 			#image= io.BytesIO(img.read())
@@ -49,8 +53,8 @@ def home():
 			img_b64_str= str(base64.b64encode(image_data))
 			#breed, acc= predict_raw(thumbnail)
 			img_b64_str= str(base64.b64encode(thumbnail))
-			breed, acc= '', 0.0
-			prediction= {'label':'HUMAN', 'breed':breed, 'accuracy':acc}
+			breed, acc= None, 0.0
+			prediction= {'label':'HUMAN', 'breed':token, 'accuracy':acc}
 		except Exception as e:
 			return jsonify(status_code='400', msg='Bad Request: %s' % str(e)), 400
 		return render_template('view.html', image_data= img_b64_str, file_name= img.filename, content_type= img.content_type, prediction= prediction)
