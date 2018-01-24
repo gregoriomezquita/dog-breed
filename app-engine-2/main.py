@@ -28,7 +28,7 @@ from google.appengine.api import urlfetch
 
 app = Flask(__name__)
 
-token= app_identity.get_access_token('https://www.googleapis.com/auth/cloud-platform')[0]
+
 
 with open('dog_names.json', 'r') as f: dog_names= json.load(f)
 
@@ -38,6 +38,7 @@ def predict_rest(data):
 		input_instance = dict(inputs=b64)
 		input_instance = json.loads(json.dumps(input_instance))
 		request_body = {"instances": [input_instance]}
+		token= app_identity.get_access_token('https://www.googleapis.com/auth/cloud-platform')[0]
  		result = urlfetch.fetch(
         url = 'https://ml.googleapis.com/v1/projects/{}/models/{}/versions/{}:predict'.format('udacity-190420','DogBreed','v1'),
         payload=json.dumps(request_body),
@@ -75,7 +76,7 @@ def home():
 			#img_b64_str= str(base64.b64encode(thumbnail))
 			
 			breed, acc= predict_rest(thumbnail)
-			prediction= {'label':'DOG', 'breed':breed, 'accuracy':acc}
+			prediction= {'label':'DOG %s' % breed, 'breed':breed, 'accuracy':acc}
 		except Exception as e:
 			return jsonify(status_code='400', msg='Bad Request: %s' % str(e)), 400
 		return render_template('view.html', image_data= img_b64_str, file_name= img.filename, content_type= img.content_type, prediction= prediction)
