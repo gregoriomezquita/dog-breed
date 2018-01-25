@@ -1,34 +1,33 @@
-# Copyright 2016 Google Inc.
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
+# Gregorio Mezquita 
+# Jan 2018
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+# To run the app in a local envirenment(python 2):
+# dev_appserver.py app.yaml
 #
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
+# To deploy in Google:
+# gcloud app deploy [--project PROJECT-ID] [-v VERSION]
+#
 # [START app]
 import logging
 from flask import current_app, Flask, render_template, request, jsonify, send_from_directory
-from google.appengine.api import images
-#from google.appengine.ext import ndb
-from google.appengine.api import app_identity
-from google.appengine.api import urlfetch
-from oauth2client.client import GoogleCredentials
-from googleapiclient import discovery
-from googleapiclient import errors
 import os
 import io
 import base64
 import json
 import time
 import numpy as np
+from google.appengine.api import images
+from google.appengine.api import app_identity
 from google.appengine.api import urlfetch
+#
+# from a python 2 environment:
+# pip install --upgrade -t lib requirements.txt
+#
+from oauth2client.client import GoogleCredentials
+from googleapiclient import discovery
+from googleapiclient import errors
+
 
 app = Flask(__name__)
 
