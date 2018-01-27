@@ -16,13 +16,13 @@
 		<div class="panel panel-primary" id='panel_left'>
 				<div class="panel-heading">
     			<h3 class="panel-title">
-						<b>{{prediction.label}}</b>&nbsp;&nbsp;&nbsp;<span class="badge">{{prediction.accuracy}} %</span>
+						<b>{{prediction.label}}</b>&nbsp;&nbsp;&nbsp;<span class="badge">{{prediction.accuracy}}</span>
     			</h3>
   			</div>
   			<div class="panel-body" >
-    			<img id="uploaded_image" alt='{{file_name}}' src=""  style= "max-width:100%;" onload="resizeImage(this);"/>
+    			<img id="uploaded_image" alt='{{presentation.file_name}}' src=""  style= "max-width:100%;" onload="resizeImage(this);"/>
       		<script>
-  					document.getElementById("uploaded_image").src='data:'+ '{{content_type}}'+ ';base64,' + '{{image_data}}';
+  					document.getElementById("uploaded_image").src='data:'+ '{{presentation.content_type}}'+ ';base64,' + '{{presentation.image_data}}';
 					</script> 
   			</div>
 		</div>
