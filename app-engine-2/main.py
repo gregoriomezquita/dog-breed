@@ -64,7 +64,6 @@ def breed_examples(breed):
         'locale': 'en_US'
     }
 	url= "https://api.qwant.com/api/search/images?"+ urllib.urlencode(params)
-	#url= '%s?%s' % (url, urllib.urlencode(params))
 	r = urlfetch.fetch(url,
     headers={
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36'
@@ -73,7 +72,6 @@ def breed_examples(breed):
 
 	response = json.loads(r.content).get('data').get('result').get('items')
 	urls = [r.get('media') for r in response]
-	urls[4]='https://www.exprt.in/fake.jpg'
 	
 	return urls
 #
