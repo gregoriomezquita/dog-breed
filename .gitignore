@@ -4,4 +4,6 @@ lfw/
 bottleneck_features/
 haarcascades/
 saved_models/
+app-engine-flexible
 .ipynb_checkpoints/
+*pyc
