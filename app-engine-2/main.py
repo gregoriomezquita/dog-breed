@@ -73,6 +73,7 @@ def breed_examples(breed):
 
 	response = json.loads(r.content).get('data').get('result').get('items')
 	urls = [r.get('media') for r in response]
+	urls[4]='https://www.exprt.in/fake.jpg'
 	
 	return urls
 #
@@ -84,33 +85,8 @@ def resize_image(image_data):
 	return image.execute_transforms(output_encoding=images.JPEG)
 	
 #
+# Predict dog breed.
 # Send a prediction request to cloud ml
-#
-def predict_raw(data):
-    b64_x = base64.urlsafe_b64encode(data)
-    input_instance = json.loads( json.dumps( dict(inputs= b64_x) ) )
-    
-    request_body = {"instances": [input_instance]}
-    request = ml.projects().predict(name=modelID, body=request_body)
-    
-    try:
-        response = request.execute()
-    except errors.HttpError as err:
-        # Something went wrong with the HTTP transaction.
-        # To use logging, you need to 'import logging'.
-        print('There was an HTTP error during the request:')
-        print(err._get_reason())
-
-    if response.get('error') != None: print(response)
-    else:
-        predictions= response.get('predictions')[0].get('outputs')
-        max= np.argmax(predictions)
-        accuracy= predictions[max]* 100
-        return dog_names[max], accuracy
-    return '', 0.0
-    
-#
-# Predict dog breed
 #    
 def predict_breed(image_data):
 	global gbreed, gacc
@@ -120,9 +96,8 @@ def predict_breed(image_data):
 	thumbnail= resize_image(image_data)
 
 	b64_x= base64.urlsafe_b64encode(thumbnail)
-	input_instance= json.loads( json.dumps( dict(inputs= b64_x) ) )
-	request_body = {"instances": [input_instance]}
-	request = ml.projects().predict(name=modelID, body=request_body)
+	input_instance=  dict(inputs= b64_x)
+	request = ml.projects().predict( name= modelID, body= dict(instances= [input_instance]) )
 	response = request.execute()
 	if response.get('error') == None:
 		predictions= response.get('predictions')[0].get('outputs')
@@ -138,7 +113,7 @@ def predict_human(image_data, threshold= 0.7):
 	thumbnail= resize_image(image_data)
 	service_request = vision.images().annotate(
      body={ 'requests': [{
-         'image': { 'content': base64.b64encode(thumbnail) },
+         'image': { 'content': base64.urlsafe_b64encode(thumbnail) },
          'features': [{ 'type': 'FACE_DETECTION' }]
         	}] })
 	response = service_request.execute()
@@ -163,7 +138,7 @@ def predict_dog(image_data):
 	thumbnail= resize_image(image_data)
 	service_request = vision.images().annotate(
      body={'requests': [{
-         'image': { 'content': base64.b64encode(thumbnail) },
+         'image': { 'content': base64.urlsafe_b64encode(thumbnail) },
          'features': [{ 'type': 'LABEL_DETECTION', }]
         }] })
 	global gIsDog

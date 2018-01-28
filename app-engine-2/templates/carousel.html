@@ -1,3 +1,7 @@
+<!--
+	Gregorio Mezquita 
+	Jan 2018
+-->
 {% extends "base.html" %}
 
 {% block content %}
@@ -5,6 +9,12 @@
 <script>
   function resizeImage(obj) {
     obj.style['max-height']= screen.height * 0.68;
+  }
+  function onErrorImage(obj, index) {
+		//obj.src= 'https://media0.giphy.com/media/GDnomdqpSHlIs/200.gif'
+		obj.src= 'favicon.ico'
+		obj.onerror = "";
+		obj.parentNode.getElementsByTagName('div')[0].innerHTML= '<p><b>Example not found</b></p>'
   }
 </script>
 
@@ -30,16 +40,18 @@
       			<script>
   						document.getElementById("uploaded_image").src='data:'+ '{{presentation.content_type}}'+ ';base64,' + '{{presentation.image_data}}';
 						</script> 
+						<!--
 						{% if presentation.examples|length > 0 %}
         		<div class="carousel-caption">
           		<p><b>Original image</b></p>
         		</div>
         		{% endif %}
+        		-->
       		</div>
       		
       		{% for example in presentation.examples %}
     				<div class="item">
-        			<img src={{ example }} style= "max-width:100%;" onload="resizeImage(this);">
+        			<img src={{ example }} style= "max-width:100%;" onload="resizeImage(this);" onerror="onErrorImage(this, {{ loop.index }});">
         			<div class="carousel-caption">
           			<p><b>Breed example</b></p>
         			</div>
